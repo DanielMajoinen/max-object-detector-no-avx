@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.com/IBM/MAX-Object-Detector.svg?branch=master)](https://travis-ci.com/IBM/MAX-Object-Detector) [![Website Status](https://img.shields.io/website/http/max-object-detector.max.us-south.containers.appdomain.cloud/swagger.json.svg?label=api+demo)](http://max-object-detector.max.us-south.containers.appdomain.cloud/)
-
-[<img src="docs/deploy-max-to-ibm-cloud-with-kubernetes-button.png" width="400px">](http://ibm.biz/max-to-ibm-cloud-tutorial)
+NOTE: This fork allows the MAX-Object-Detector to be run on older machines with CPU's which don't support the AVX instruction set.
 
 # IBM Developer Model Asset Exchange: Object Detector
 
@@ -37,56 +35,13 @@ Y. Song, S. Guadarrama, K. Murphy_, ["Speed/accuracy trade-offs for modern convo
 * `docker`: The [Docker](https://www.docker.com/) command-line interface. Follow the [installation instructions](https://docs.docker.com/install/) for your system.
 * The minimum recommended resources for this model is 2GB Memory and 2 CPUs.
 
-# Deployment options
-
-* [Deploy from Docker Hub](#deploy-from-docker-hub)
-* [Deploy on Red Hat OpenShift](#deploy-on-red-hat-openshift)
-* [Deploy on Kubernetes](#deploy-on-kubernetes)
-* [Run Locally](#run-locally)
-
-## Deploy from Docker Hub
-
-To run the docker image, which automatically starts the model serving API, run:
-
-Intel CPUs:
-```bash
-$ docker run -it -p 5000:5000 codait/max-object-detector
-```
-
-ARM CPUs (eg Raspberry Pi):
-```bash
-$ docker run -it -p 5000:5000 codait/max-object-detector:arm-arm32v7-latest
-```
-
-This will pull a pre-built image from Docker Hub (or use an existing image if already cached locally) and run it.
-If you'd rather checkout and build the model locally you can follow the [run locally](#run-locally) steps below.
-
-## Deploy on Red Hat OpenShift
-
-You can deploy the model-serving microservice on Red Hat OpenShift by following the instructions for the OpenShift web console or the OpenShift Container Platform CLI [in this tutorial](https://developer.ibm.com/tutorials/deploy-a-model-asset-exchange-microservice-on-red-hat-openshift/), specifying `codait/max-object-detector` as the image name.
-
-## Deploy on Kubernetes
-
-You can also deploy the model on Kubernetes using the latest docker image on Docker Hub.
-
-On your Kubernetes cluster, run the following commands:
-
-```bash
-$ kubectl apply -f https://raw.githubusercontent.com/IBM/MAX-Object-Detector/master/max-object-detector.yaml
-```
-
-The model will be available internally at port `5000`, but can also be accessed externally through the `NodePort`.
-
-A more elaborate tutorial on how to deploy this MAX model to production on [IBM Cloud](https://ibm.biz/Bdz2XM) can be found [here](http://ibm.biz/max-to-ibm-cloud-tutorial).
-
 ## Run Locally
 
 1. [Build the Model](#1-build-the-model)
 2. [Deploy the Model](#2-deploy-the-model)
 3. [Use the Model](#3-use-the-model)
-4. [Run the Notebook](#4-run-the-notebook)
-5. [Development](#5-development)
-6. [Cleanup](#6-cleanup)
+4. [Development](#4-development)
+5. [Cleanup](#5-cleanup)
 
 
 ### 1. Build the Model
@@ -94,7 +49,7 @@ A more elaborate tutorial on how to deploy this MAX model to production on [IBM 
 Clone this repository locally. In a terminal, run the following command:
 
 ```bash
-$ git clone https://github.com/IBM/MAX-Object-Detector.git
+$ git clone https://github.com/DanielMajoinen/max-object-detector-no-avx.git
 ```
 
 Change directory into the repository base folder:
@@ -109,13 +64,7 @@ To build the docker image locally for Intel CPUs, run:
 $ docker build -t max-object-detector .
 ```
 
-For ARM CPUs (eg Raspberry Pi), run:
-
-```bash
-$ docker build -f Dockerfile.arm32v7 -t max-object-detector .
-```
-
-All required model assets will be downloaded during the build process. _Note_ that currently this docker image is CPU only (we will add support for GPU images later).
+All required model assets will be downloaded during the build process. _Note_ that currently this docker image is CPU only.
 
 
 ### 2. Deploy the Model
@@ -181,23 +130,11 @@ $ curl -F "image=@samples/dog-human.jpg" -XPOST http://127.0.0.1:5000/model/pred
 The optional `threshold` parameter is the minimum `probability` value for predicted labels returned by the model.
 The default value for `threshold` is `0.7`.
 
-### 4. Run the Notebook
-
-[The demo notebook](demo.ipynb) walks through how to use the model to detect objects in an image and visualize the results. By default, the notebook uses the [hosted demo instance](http://max-object-detector.max.us-south.containers.appdomain.cloud), but you can use a locally running instance (see the comments in Cell 3 for details). _Note_ the demo requires `jupyter`, `matplotlib`, `Pillow`, and `requests`.
-
-Run the following command from the model repo base folder, in a new terminal window:
-
-```bash
-$ jupyter notebook
-```
-
-This will start the notebook server. You can launch the demo notebook by clicking on `demo.ipynb`.
-
-### 5. Development
+### 4. Development
 
 To run the Flask API app in debug mode, edit `config.py` to set `DEBUG = True` under the application settings. You will then need to rebuild the docker image (see [step 1](#1-build-the-model)).
 
-### 6. Cleanup
+### 5. Cleanup
 
 To stop the Docker container, type `CTRL` + `C` in your terminal.
 
@@ -220,11 +157,6 @@ If you wish to disable the web app, start the model serving API by running:
 ```bash
 $ docker run -it -p 5000:5000 -e DISABLE_WEB_APP=true codait/max-object-detector
 ```
-
-## Train this Model on Watson Machine Learning
-
-This model supports training from scratch on a custom dataset. Please follow the steps listed under the [training README](training/README.md) to retrain the model on [Watson Machine Learning](https://www.ibm.com/cloud/machine-learning), a deep learning as a service offering of [IBM Cloud](https://ibm.biz/Bdz2XM).
-
 ## Resources and Contributions
    
 If you are interested in contributing to the Model Asset Exchange project or have any queries, please follow the instructions [here](https://github.com/CODAIT/max-central-repo).
