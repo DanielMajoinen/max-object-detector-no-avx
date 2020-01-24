@@ -36,6 +36,9 @@ RUN wget -nv --show-progress --progress=bar:force:noscroll https://github.com/IB
 
 RUN mv ./MAX-Object-Detector-Web-App-1.2/static static
 
+RUN conda install -y conda=4.6.14
+RUN conda install -y tensorflow=1.13.1
+
 COPY requirements.txt /workspace
 RUN pip install -r requirements.txt
 
